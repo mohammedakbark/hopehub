@@ -8,7 +8,6 @@ import 'package:hopehub/data/Model/dr_model.dart';
 import 'package:hopehub/data/firebase/booking_controller.dart';
 import 'package:hopehub/data/firebase/controller.dart';
 import 'package:hopehub/presentation/module/user/page_slote_package.dart';
-import 'package:hopehub/presentation/module/user/payment.dart';
 import 'package:provider/provider.dart';
 
 class ScedulingPage extends StatefulWidget {
@@ -214,6 +213,9 @@ class _ScedulingPageState extends State<ScedulingPage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => SlotePackagePage(
+                                          bookingIdForReshedule: "",
+                                          isRescheduling: false,
+                                          isFreeBook: false,
                                           drName: nameController.text,
                                           drid: widget.drmodel.id!,
                                           email: emailController.text,

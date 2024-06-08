@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hopehub/data/Model/user_model.dart';
@@ -9,7 +10,7 @@ import 'package:hopehub/presentation/module/user/package.dart';
 import 'package:image_picker/image_picker.dart';
 // import 'package:terra_treasures/model/user_model.dart';
 
-class DbController {
+class DbController with ChangeNotifier {
   final db = FirebaseFirestore.instance;
 
   Future<void> addUser(UserModel userModel, String uid) async {
@@ -41,10 +42,86 @@ class DbController {
 
   UserModel? singleUserData;
 
-  Future<void> fetchSingleUserData(String id) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> fetchSingleUserData(
+      String id) async {
     final snapshot = await db.collection("user").doc(id).get();
     singleUserData = UserModel.fromMap(snapshot.data()!);
+    return snapshot;
   }
 
-  
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getUSerData(String id) {
+    return db.collection("user").doc(id).snapshots();
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getDoctorData(String id) {
+    return db.collection("doctor").doc(id).snapshots();
+  }
+
+  cancelMyBooking(bookingId, doctorId) async {
+    db
+        .collection('doctor')
+        .doc(doctorId)
+        .collection('bookings')
+        .doc(bookingId)
+        .delete();
+    db
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('bookings')
+        .doc(bookingId)
+        .delete();
+  }
+  //=====================DOCTOR
+
+  Stream<QuerySnapshot> getBooking() {
+    return db
+        .collection('doctor')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('bookings')
+        .where("status", isNotEqualTo: "Rejected")
+        .snapshots();
+  }
+
+  updayeStatus(bookingId, patientId, newStatus) {
+    db
+        .collection('doctor')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('bookings')
+        .doc(bookingId)
+        .update({"status": newStatus});
+    db
+        .collection('user')
+        .doc(patientId)
+        .collection('bookings')
+        .doc(bookingId)
+        .update({"status": newStatus});
+  }
+
+  Stream<QuerySnapshot> getbookedSchedulesforUser() {
+    return db
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('bookings')
+        .where("status", isEqualTo: "Accepted")
+        .snapshots();
+  }
+
+ Stream<QuerySnapshot>  getRejectedBooking(){
+   return db
+        .collection('user')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection('bookings')
+        .where("status", isEqualTo: "Rejected")
+        .snapshots();
+
+ }
 }
+
+
+
+// await firebaseFirestore
+//         .collection('user')
+//         .doc(auth.currentUser!.uid)
+//         .collection('bookings')
+//         .doc(newBooking.bookingStart.toString())
+//         .set(_bookingModel!.toMap()); 

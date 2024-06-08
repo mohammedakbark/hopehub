@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hopehub/data/Model/booking_model.dart';
+import 'package:hopehub/data/firebase/db_controller.dart';
 import 'package:intl/intl.dart';
 
 class BookingController with ChangeNotifier {
@@ -94,7 +95,7 @@ class BookingController with ChangeNotifier {
     return newBooking;
   }
 
- Future bookNewSchedule(BookingService newBooking) async {
+  Future bookNewSchedule(BookingService newBooking) async {
     _bookingModel = BookingModel(
         status: "Pending",
         payment: "130",
@@ -122,5 +123,10 @@ class BookingController with ChangeNotifier {
         .set(_bookingModel!.toMap());
 
     print('/////////Uploaded successfully');
+  }
+
+ Future recheduleDoctor(bookingId, doctorId, BookingService newBooking)async {
+    DbController().cancelMyBooking(bookingId, doctorId);
+    bookNewSchedule(newBooking);
   }
 }

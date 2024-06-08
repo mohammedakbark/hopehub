@@ -2,19 +2,27 @@ import 'package:booking_calendar/booking_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hopehub/data/firebase/booking_controller.dart';
-import 'package:hopehub/presentation/module/user/payment.dart';
+import 'package:hopehub/presentation/module/user/boo.dart';
+import 'package:hopehub/presentation/module/user/payment_screen.dart';
+import 'package:hopehub/presentation/module/user/success.dart';
 import 'package:provider/provider.dart';
 
 class SlotePackagePage extends StatelessWidget {
+  bool isRescheduling;
+  String bookingIdForReshedule;
   String name;
   String email;
   String whatsappnumber;
   String drid;
   String drName;
+  bool isFreeBook;
 
   SlotePackagePage(
       {super.key,
+      required this.bookingIdForReshedule,
+      required this.isRescheduling,
       required this.drName,
+      required this.isFreeBook,
       required this.drid,
       required this.email,
       required this.name,
@@ -80,11 +88,35 @@ class SlotePackagePage extends StatelessWidget {
                       uploadBooking: ({required newBooking}) {
                         return controller
                             .uploadBookingMock(newBooking: newBooking)
-                            .then((value) =>
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => pay(
-                                          newBooking: value,
-                                        ))));
+                            .then((value) {
+                          if (isFreeBook == false) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => PaymentPage(
+                                      newBooking: value,
+                                    )));
+                          } else {
+                            if (isRescheduling == true) {
+                              BookingController()
+                                  .recheduleDoctor(
+                                      bookingIdForReshedule, drid, value)
+                                  .then((value) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const success()));
+                              });
+                            } else {
+                              BookingController()
+                                  .bookNewSchedule(value)
+                                  .then((value) {
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const success()));
+                              });
+                            }
+                          }
+                        });
                       },
                       pauseSlots: controller.generatePauseSlots(),
                       convertStreamResultToDateTimeRanges:

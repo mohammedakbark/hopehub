@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:hopehub/data/firebase/booking_controller.dart';
 import 'package:hopehub/data/firebase/controller.dart';
+import 'package:hopehub/data/firebase/db_controller.dart';
+import 'package:hopehub/data/firebase/payment_service.dart';
 import 'package:hopehub/presentation/login/loginpage.dart';
 import 'package:hopehub/presentation/module/admin/adhome.dart';
 import 'package:hopehub/business_logic/firebase_options.dart';
@@ -27,7 +29,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<BookingController>(create: (_)=>BookingController())
+        ChangeNotifierProvider<BookingController>(create: (_)=>BookingController()),
+                ChangeNotifierProvider<PaymentController>(create: (_)=>PaymentController()),
+                                ChangeNotifierProvider<DbController>(create: (_)=>DbController())
+
+
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -13,7 +13,6 @@ import 'package:hopehub/presentation/login/loginpage.dart';
 import 'package:hopehub/presentation/module/user/connection.dart';
 import 'package:hopehub/presentation/module/user/help.dart';
 
-import 'package:hopehub/presentation/module/user/payment.dart';
 
 import 'package:hopehub/presentation/module/user/page_profilepage.dart';
 import 'package:hopehub/presentation/module/user/feedback.dart';

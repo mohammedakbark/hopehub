@@ -49,6 +49,7 @@ dependencies:
   fluttertoast: ^8.2.5
   booking_calendar: ^1.1.10
   intl: ^0.18.1
+  upi_india: ^3.0.1
 
 dev_dependencies:
   flutter_test:

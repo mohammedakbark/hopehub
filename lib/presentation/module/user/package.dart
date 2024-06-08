@@ -1,7 +1,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:hopehub/presentation/module/user/page_home.dart';
-import 'package:hopehub/presentation/module/user/payment.dart';
 import 'package:hopehub/presentation/module/user/page_prescription.dart';
 import 'package:hopehub/presentation/module/user/page_profilepage.dart';
 import 'package:hopehub/presentation/module/user/page_schedule.dart';
