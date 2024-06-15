@@ -5,7 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hopehub/data/Model/session_model.dart';
 import 'package:hopehub/data/firebase/booking_controller.dart';
+import 'package:hopehub/data/firebase/db_controller.dart';
 import 'package:hopehub/data/firebase/payment_service.dart';
 import 'package:hopehub/presentation/module/user/success.dart';
 import 'package:intl/intl.dart';
@@ -15,11 +17,11 @@ import 'package:upi_india/upi_response.dart';
 final recieverUPIID = "hopehub@paytm";
 
 class PaymentPage extends StatefulWidget {
-    BookingService newBooking;
+  bool isPaymentForMentor;
+  BookingService ?newBooking;
+  SessionModel? sessionModel;
 
-  
-  
-  PaymentPage({super.key,required this.newBooking});
+  PaymentPage({super.key,  this.newBooking, this.sessionModel,required this.isPaymentForMentor});
 
   @override
   State<PaymentPage> createState() => _PaymentPageState();
@@ -97,18 +99,28 @@ class _PaymentPageState extends State<PaymentPage> {
                               app: snapshot.data![index],
                               receiverUpiId: recieverUPIID,
                               receiverName: "hophub",
-                              amount: 130)
+                              amount:widget.isPaymentForMentor?widget.sessionModel!.totalSession*100: 130)
                           .then((value) => null)
                           .catchError((error) {
-                             BookingController()
-                            .bookNewSchedule(widget.newBooking)
-                            .then((value) {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const success()));
-                        });
+                        if (widget.isPaymentForMentor == true) {
+                          DbController().updatePaymentOFMentor(widget.sessionModel!.sessionId).then((value) {
+                             Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const success()));
+                        
                           });
+                        } else {
+                          BookingController()
+                              .bookNewSchedule(widget.newBooking!)
+                              .then((value) {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const success()));
+                          });
+                        }
+                      });
                     },
                     leading: Image.memory(snapshot.data![index].icon),
                     title: Text(

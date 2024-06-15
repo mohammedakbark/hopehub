@@ -108,6 +108,7 @@ class BookingController with ChangeNotifier {
         email: newBooking.userEmail.toString(),
         sessionMode: sessionMode,
         whatsApp: newBooking.userPhoneNumber.toString());
+
     print('////////////${newBooking.serviceId}');
     await firebaseFirestore
         .collection('doctor')
@@ -125,8 +126,16 @@ class BookingController with ChangeNotifier {
     print('/////////Uploaded successfully');
   }
 
- Future recheduleDoctor(bookingId, doctorId, BookingService newBooking)async {
+  Future recheduleDoctor(bookingId, doctorId, BookingService newBooking) async {
     DbController().cancelMyBooking(bookingId, doctorId);
     bookNewSchedule(newBooking);
+  }
+
+  Future<QuerySnapshot> checkUserAlredyHAveAScedule() async {
+    return firebaseFirestore
+        .collection('user')
+        .doc(auth.currentUser!.uid)
+        .collection('bookings')
+        .get();
   }
 }

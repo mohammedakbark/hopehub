@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hopehub/data/Model/dr_model.dart';
+import 'package:hopehub/data/firebase/booking_controller.dart';
 import 'package:hopehub/presentation/module/user/booking_schedulingpage.dart';
+import 'package:hopehub/presentation/widget/custome_snackbar.dart';
 
 class BookingDoctorDetailsPage extends StatefulWidget {
   Drmodel doctor;
@@ -138,11 +140,21 @@ class _BookingDoctorDetailsPageState extends State<BookingDoctorDetailsPage> {
                                   MaterialStatePropertyAll(Colors.amber[900]),
                             ),
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                           ScedulingPage(drmodel: widget.doctor,)));
+                              BookingController()
+                                  .checkUserAlredyHAveAScedule()
+                                  .then((value) {
+                                if (value.docs.isEmpty) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => ScedulingPage(
+                                                drmodel: widget.doctor,
+                                              )));
+                                } else {
+                                  CSnackBar.showErrorSnack(
+                                      context, "You cant book right now!");
+                                }
+                              });
                             },
                             child: Text(
                               "Book",

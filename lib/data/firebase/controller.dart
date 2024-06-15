@@ -19,9 +19,18 @@ class Controller  {
     );
   }
 
-  Future<String> uploadImage(File imageFile) async {
+
+  
+  Future<XFile?> pickImageFromCamera() async {
+    final imagePicker = ImagePicker();
+    return await imagePicker.pickImage(
+      source: ImageSource.camera  ,
+    );
+  }
+
+  Future<String> uploadImage(String path,File imageFile) async {
     SettableMetadata metadata = SettableMetadata(contentType: 'image/jpeg');
-    final storageRef = _storage.ref().child('images/${imageFile.path}');
+    final storageRef = _storage.ref().child('$path/${imageFile.path}');
     try {
       final uploadTask = storageRef.putFile(File(imageFile.path), metadata);
       final snapshot = await uploadTask.whenComplete(() => null);
@@ -32,6 +41,6 @@ class Controller  {
     }
   }
 
-  // SLOTE BOOKING......................
+  // SLOTE BOOKING.................2.....
  
 }

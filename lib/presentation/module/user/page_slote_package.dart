@@ -92,6 +92,7 @@ class SlotePackagePage extends StatelessWidget {
                           if (isFreeBook == false) {
                             Navigator.of(context).push(MaterialPageRoute(
                                 builder: (context) => PaymentPage(
+                                  isPaymentForMentor: false,
                                       newBooking: value,
                                     )));
                           } else {

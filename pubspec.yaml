@@ -50,6 +50,8 @@ dependencies:
   booking_calendar: ^1.1.10
   intl: ^0.18.1
   upi_india: ^3.0.1
+  http: ^1.2.1
+  videosdk: ^1.1.12
 
 dev_dependencies:
   flutter_test:

@@ -9,6 +9,8 @@ import 'package:hopehub/business_logic/login_preference.dart';
 import 'package:hopehub/data/Model/booking_model.dart';
 import 'package:hopehub/data/Model/user_model.dart';
 import 'package:hopehub/data/firebase/db_controller.dart';
+import 'package:hopehub/presentation/module/doctor/custome_drawer.dart';
+import 'package:hopehub/presentation/module/doctor/de_notif_page.dart';
 import 'package:hopehub/presentation/module/doctor/drchat.dart';
 import 'package:hopehub/presentation/module/user/chatting.dart';
 
@@ -19,6 +21,7 @@ import 'package:hopehub/presentation/login/login1.dart';
 import 'package:hopehub/presentation/module/user/help.dart';
 import 'package:hopehub/presentation/module/user/notification.dart';
 import 'package:hopehub/presentation/module/user/settings.dart';
+import 'package:hopehub/presentation/widget/room/api_controller.dart';
 import 'package:provider/provider.dart';
 
 class drhome extends StatefulWidget {
@@ -35,144 +38,7 @@ class _drhomeState extends State<drhome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[850],
-      drawer: Drawer(
-        backgroundColor: Colors.black,
-        child: ListView(
-          children: [
-            // UserAccountsDrawerHeader(accountName: Text("Catherine"), accountEmail: Text("catherine@gmail.com"),decoration:BoxDecoration(color: Colors.red) ,),
-
-            const Padding(
-              padding: EdgeInsets.only(right: 200, top: 20),
-              child: CircleAvatar(
-                radius: 45,
-                backgroundColor: Colors.white,
-                child: CircleAvatar(
-                  radius: 40,
-                  backgroundImage: AssetImage("assets/dr3.png"),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, left: 10),
-              child: Text(
-                "Dr.Dayana",
-                style: GoogleFonts.inknutAntiqua(
-                    color: Colors.white, fontSize: 18),
-              ),
-            ),
-
-            ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const drprofile()));
-                },
-                leading: const Icon(
-                  Icons.person,
-                  size: 30,
-                ),
-                iconColor: Colors.amber[900],
-                title: Text(
-                  "Profile",
-                  style: GoogleFonts.inknutAntiqua(
-                      color: Colors.white, fontSize: 15),
-                )),
-            const Divider(),
-            ListTile(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const drhome()));
-                },
-                leading: const Icon(
-                  Icons.pending_actions_rounded,
-                  size: 30,
-                ),
-                iconColor: Colors.amber[900],
-                title: Text(
-                  "My Schedule",
-                  style: GoogleFonts.inknutAntiqua(
-                    color: Colors.white,
-                    fontSize: 15,
-                  ),
-                )),
-
-            const Divider(),
-            ListTile(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const drreport()));
-              },
-              leading: const Icon(
-                Icons.contact_page_outlined,
-                size: 30,
-              ),
-              iconColor: Colors.amber[900],
-              title: Text("Report",
-                  style: GoogleFonts.inknutAntiqua(
-                    color: Colors.white,
-                    fontSize: 15,
-                  )),
-            ),
-
-            const Divider(),
-            ListTile(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const setting()));
-              },
-              leading: const Icon(
-                Icons.settings,
-                size: 30,
-              ),
-              iconColor: Colors.amber[900],
-              title: Text("Settings",
-                  style: GoogleFonts.inknutAntiqua(
-                    color: Colors.white,
-                    fontSize: 15,
-                  )),
-            ),
-            const Divider(),
-            ListTile(
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const helps()));
-              },
-              leading: const Icon(
-                Icons.help,
-                size: 30,
-              ),
-              iconColor: Colors.amber[900],
-              title: Text("Help",
-                  style: GoogleFonts.inknutAntiqua(
-                    color: Colors.white,
-                    fontSize: 15,
-                  )),
-            ),
-            const Divider(),
-            ListTile(
-              onTap: () async {
-                FirebaseAuth.instance.signOut().then((value) =>
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => const logo1()),
-                        (route) => false));
-                LoginPreference.clearPreference();
-              },
-              leading: const Icon(
-                Icons.logout,
-                size: 30,
-              ),
-              iconColor: Colors.amber[900],
-              title: Text("Logout",
-                  style: GoogleFonts.inknutAntiqua(
-                    color: Colors.white,
-                    fontSize: 15,
-                  )),
-            ),
-            const Divider(),
-          ],
-        ),
-      ),
+      drawer: DrCustomeDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         bottom: const PreferredSize(
@@ -194,8 +60,10 @@ class _drhomeState extends State<drhome> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const notifictn()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DrNotificationPage()));
             },
             icon: const Icon(
               Icons.notifications_on,
@@ -396,85 +264,103 @@ class _drhomeState extends State<drhome> {
                                                                       .white,
                                                                   fontSize: 15),
                                                         ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(
-                                                                  top: 15),
-                                                          child: Row(
-                                                            children: [
-                                                              ElevatedButton(
-                                                                  style: ButtonStyle(
-                                                                      shape: MaterialStatePropertyAll(RoundedRectangleBorder(
-                                                                          borderRadius: BorderRadius.circular(
-                                                                              7),
-                                                                          side: const BorderSide(
-                                                                              color: Colors
-                                                                                  .white))),
-                                                                      backgroundColor:
-                                                                          MaterialStatePropertyAll(Colors.amber[
-                                                                              900])),
-                                                                  onPressed:
-                                                                      () {
-                                                                    if (mybooking[index]
-                                                                            .status ==
-                                                                        "Pending") {
-                                                                      DbController().updayeStatus(
-                                                                          mybooking[index]
-                                                                              .bookingid,
-                                                                          mybooking[index]
-                                                                              .userid,
-                                                                          "Accepted");
-                                                                    } else {
-                                                                      Navigator.push(
-                                                                          context,
-                                                                          MaterialPageRoute(
-                                                                              builder: (context) => const drchat()));
-                                                                    }
-                                                                  },
-                                                                  child: Text(
-                                                                    mybooking[index].status ==
-                                                                            "Pending"
-                                                                        ? "Accept"
-                                                                        : mybooking[index]
-                                                                            .sessionMode,
+                                                        mybooking[index].status ==
+                                                                "assigned"
+                                                            ? ElevatedButton(
+                                                                style: ButtonStyle(
+                                                                    shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(
+                                                                                7),
+                                                                        side: const BorderSide(
+                                                                            color: Colors
+                                                                                .white))),
+                                                                    backgroundColor:
+                                                                        MaterialStatePropertyAll(Colors
+                                                                            .transparent)),
+                                                                onPressed:
+                                                                    () {},
+                                                                child: Text(
+                                                                    "Assigned",
                                                                     style: GoogleFonts.inknutAntiqua(
                                                                         color: Colors
                                                                             .white,
-                                                                        fontSize:
-                                                                            15),
-                                                                  )),
-                                                              Padding(
+                                                                        fontSize: 15)))
+                                                            : Padding(
                                                                 padding:
                                                                     const EdgeInsets
                                                                         .only(
-                                                                        left:
-                                                                            10),
-                                                                child: mybooking[index]
-                                                                            .status ==
-                                                                        "Pending"
-                                                                    ? ElevatedButton(
+                                                                        top:
+                                                                            15),
+                                                                child: Row(
+                                                                  children: [
+                                                                    ElevatedButton(
                                                                         style: ButtonStyle(
                                                                             shape:
                                                                                 MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(7), side: const BorderSide(color: Colors.white))),
                                                                             backgroundColor: MaterialStatePropertyAll(Colors.amber[900])),
                                                                         onPressed: () {
-                                                                          DbController().updayeStatus(
-                                                                              mybooking[index].bookingid,
-                                                                              mybooking[index].userid,
-                                                                              "Rejected");
+                                                                          if (mybooking[index].status ==
+                                                                              "Pending") {
+                                                                            DbController().updayeStatus(
+                                                                                mybooking[index].bookingid,
+                                                                                mybooking[index].userid,
+                                                                                "Accepted",
+                                                                                FirebaseAuth.instance.currentUser!.uid);
+                                                                          } else {
+                                                                            if (mybooking[index].sessionMode ==
+                                                                                "Chat") {
+                                                                              Navigator.push(
+                                                                                  context,
+                                                                                  MaterialPageRoute(
+                                                                                      builder: (context) => chatting(
+                                                                                        isMentor: false,
+                                                                                        doctorId: "",sessionId: "",userId: "",
+                                                                                            userCollection: "user",
+                                                                                            receiverId: mybooking[index].userid,
+                                                                                            bookingId: mybooking[index].bookingid,
+                                                                                          )));
+                                                                            }
+                                                                            if (mybooking[index].sessionMode ==
+                                                                                "Video Call") {
+                                                                              onCreateButtonPressed(context, mybooking[index].userid, mybooking[index].bookingid, false, "N/A", "N/A");
+                                                                              // Navigator.push(context, MaterialPageRoute(builder: (context) => CreateRoomScreen()));
+                                                                            }
+                                                                            if (mybooking[index].sessionMode ==
+                                                                                "Call") {
+                                                                              onCreateButtonPressed(context, mybooking[index].userid, mybooking[index].bookingid, false, "N/A", "N/A");
+                                                                            }
+                                                                          }
                                                                         },
                                                                         child: Text(
-                                                                          "Reject",
+                                                                          mybooking[index].status == "Pending"
+                                                                              ? "Accept"
+                                                                              : mybooking[index].sessionMode,
                                                                           style: GoogleFonts.inknutAntiqua(
                                                                               color: Colors.white,
                                                                               fontSize: 15),
-                                                                        ))
-                                                                    : SizedBox(),
+                                                                        )),
+                                                                    Padding(
+                                                                      padding: const EdgeInsets
+                                                                          .only(
+                                                                          left:
+                                                                              10),
+                                                                      child: mybooking[index].status ==
+                                                                              "Pending"
+                                                                          ? ElevatedButton(
+                                                                              style: ButtonStyle(shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(7), side: const BorderSide(color: Colors.white))), backgroundColor: MaterialStatePropertyAll(Colors.amber[900])),
+                                                                              onPressed: () {
+                                                                                DbController().updayeStatus(mybooking[index].bookingid, mybooking[index].userid, "Rejected", FirebaseAuth.instance.currentUser!.uid);
+                                                                              },
+                                                                              child: Text(
+                                                                                "Reject",
+                                                                                style: GoogleFonts.inknutAntiqua(color: Colors.white, fontSize: 15),
+                                                                              ))
+                                                                          : SizedBox(),
+                                                                    )
+                                                                  ],
+                                                                ),
                                                               )
-                                                            ],
-                                                          ),
-                                                        )
                                                       ],
                                                     ),
                                                   )

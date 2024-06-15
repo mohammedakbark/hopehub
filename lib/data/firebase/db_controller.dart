@@ -1,11 +1,16 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:hopehub/data/Model/notification_model.dart';
+import 'package:hopehub/data/Model/session_model.dart';
 import 'package:hopehub/data/Model/user_model.dart';
+import 'package:hopehub/data/firebase/booking_controller.dart';
 import 'package:hopehub/presentation/module/doctor/drhome.dart';
 import 'package:hopehub/presentation/module/mentor/menthome.dart';
+import 'package:hopehub/presentation/module/user/boo.dart';
 import 'package:hopehub/presentation/module/user/package.dart';
 import 'package:image_picker/image_picker.dart';
 // import 'package:terra_treasures/model/user_model.dart';
@@ -82,10 +87,10 @@ class DbController with ChangeNotifier {
         .snapshots();
   }
 
-  updayeStatus(bookingId, patientId, newStatus) {
+  Future updayeStatus(bookingId, patientId, newStatus, doctorId) async {
     db
         .collection('doctor')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(doctorId)
         .collection('bookings')
         .doc(bookingId)
         .update({"status": newStatus});
@@ -102,19 +107,163 @@ class DbController with ChangeNotifier {
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('bookings')
-        .where("status", isEqualTo: "Accepted")
+        // .where("status", isEqualTo: "Accepted")
         .snapshots();
   }
 
- Stream<QuerySnapshot>  getRejectedBooking(){
-   return db
+  Future<DocumentSnapshot<Map<String, dynamic>>> getSelectedbooking(
+      bookinId, uid) {
+    log(bookinId);
+    log(FirebaseAuth.instance.currentUser!.uid);
+    return db
+        .collection('user')
+        .doc(uid)
+        .collection('bookings')
+        .doc(bookinId)
+        .get();
+  }
+
+  Stream<QuerySnapshot> getRejectedBooking() {
+    return db
         .collection('user')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection('bookings')
         .where("status", isEqualTo: "Rejected")
         .snapshots();
+  }
 
- }
+  Future<QuerySnapshot<Map<String, dynamic>>> getCurrentDoctorMentors() async {
+    return db
+        .collection("mentor")
+        .where("doctorId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .get();
+  }
+
+  //-----------------Doctor assign  patient to  a mentor
+
+  assignAPatientToMentor(SessionModel sessionModel) async {
+    final docs = db.collection("Sessions").doc();
+
+    await docs.set(sessionModel.toJson(docs.id));
+  }
+
+  Stream<QuerySnapshot> fetchAssignedSessionForDoctor() {
+    return db
+        .collection("Sessions")
+        .where("doctorId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> fetchAssignedSessionForMentor() {
+    return db
+        .collection("Sessions")
+        .where("mentroId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getPrescriptionFormntor() {
+    return db
+        .collection("Sessions")
+        .where("mentroId", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        .where("status", isEqualTo: "Accepted")
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> getPrescriptionForUser() {
+    return db
+        .collection("Sessions")
+        .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+        // .where("status", isEqualTo: "Accepted")
+        .snapshots();
+  }
+
+//=================================//==================
+  deleteBooking(docId, uid, bookId) {
+    db
+        .collection('doctor')
+        .doc(docId)
+        .collection('bookings')
+        .doc(bookId)
+        .delete();
+    db.collection('user').doc(uid).collection('bookings').doc(bookId).delete();
+  }
+
+  // mentor
+
+  Future<DocumentSnapshot> getSelectedMentor(id) {
+    return db.collection("mentor").doc(id).get();
+  }
+
+  Future<DocumentSnapshot> getSelectedDoctor(id) {
+    return db.collection("doctor").doc(id).get();
+  }
+
+  Future addNotificationToDr(id, NotificationModel notificationModel) async {
+    final doc =
+        db.collection("doctor").doc(id).collection("Notification").doc();
+    doc.set(notificationModel.toJosn(doc.id));
+  }
+
+  Stream<QuerySnapshot> fetchDrnoticiation() {
+    return db.collection("doctor").snapshots();
+  }
+
+  deleteSessionOfMentorByMentor(id) {
+    db.collection("Sessions").doc(id).delete();
+  }
+
+  updateSessionStatus(id, newStatus) {
+    db.collection("Sessions").doc(id).update({"status": newStatus});
+  }
+
+  //----------------------User Mentor Handlings
+  Stream<QuerySnapshot> getSelectedUserSession() {
+    return db.collection("Sessions").snapshots();
+  }
+
+  cancelSessionOfMentorbyUser(SessionModel sessionModel) {
+    updayeStatus(sessionModel.bookingId, sessionModel.uid, "Accepted",
+            sessionModel.doctorId)
+        .then((value) {
+      deleteSessionOfMentorByMentor(sessionModel.sessionId);
+    });
+  }
+
+  Future updatePaymentOFMentor(id) async {
+    db.collection("Sessions").doc(id).update({"paymentStatus": true});
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> chechSessionIsPayed(id) async {
+    return db.collection("Sessions").doc(id).get();
+  }
+
+  //-------------------Reduce session
+
+  Future getTotolaSesstion(id) async {
+    final snapshot = await db.collection("Sessions").doc(id).get();
+    if (!snapshot.exists) return;
+    return snapshot.data()!["totalSession"];
+  }
+
+  reduceSessionByMentor(id, int session,doctorId,bookingId,userId) {
+    if (session == 0) {
+      db.collection("Sessions").doc(id).delete();
+        db
+        .collection('doctor')
+        .doc(doctorId)
+        .collection('bookings')
+        .doc(bookingId)
+        .delete();
+    db
+        .collection('user')
+        .doc(userId)
+        .collection('bookings')
+        .doc(bookingId)
+        .delete();
+    } else {
+      db.collection("Sessions").doc(id).update({"totalSession": session});
+    }
+  }
 }
 
 

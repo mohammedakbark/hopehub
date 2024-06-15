@@ -1,8 +1,21 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hopehub/business_logic/login_preference.dart';
+import 'package:hopehub/data/Model/booking_model.dart';
+import 'package:hopehub/data/Model/dr_model.dart';
+import 'package:hopehub/data/Model/notification_model.dart';
+import 'package:hopehub/data/Model/session_model.dart';
+import 'package:hopehub/data/Model/user_model.dart';
+import 'package:hopehub/data/firebase/db_controller.dart';
 import 'package:hopehub/presentation/login/login1.dart';
+import 'package:hopehub/presentation/module/mentor/mentro_drawer.dart';
+import 'package:hopehub/presentation/module/user/boo.dart';
 import 'package:hopehub/presentation/module/user/chatting.dart';
 
 import 'package:hopehub/presentation/module/user/help.dart';
@@ -10,6 +23,7 @@ import 'package:hopehub/presentation/module/mentor/mentpro.dart';
 import 'package:hopehub/presentation/module/mentor/mentrepo.dart';
 import 'package:hopehub/presentation/module/user/notification.dart';
 import 'package:hopehub/presentation/module/user/settings.dart';
+import 'package:hopehub/presentation/widget/room/api_controller.dart';
 
 class menthome extends StatefulWidget {
   const menthome({super.key});
@@ -19,153 +33,12 @@ class menthome extends StatefulWidget {
 }
 
 class _menthomeState extends State<menthome> {
+  // BookingModel? booking;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[850],
-        drawer: Drawer(
-          backgroundColor: Colors.black,
-          child: ListView(
-            children: [
-              // UserAccountsDrawerHeader(accountName: Text("Catherine"), accountEmail: Text("catherine@gmail.com"),decoration:BoxDecoration(color: Colors.red) ,),
-
-              const Padding(
-                padding: EdgeInsets.only(right: 200, top: 20),
-                child: CircleAvatar(
-                  radius: 45,
-                  backgroundColor: Colors.white,
-                  child: CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage("assets/ment.jpg"),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 10, left: 10),
-                child: Text(
-                  "Denies Thomas",
-                  style: GoogleFonts.inknutAntiqua(
-                      color: Colors.white, fontSize: 18),
-                ),
-              ),
-
-              ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const mentpro()));
-                  },
-                  leading: const Icon(
-                    Icons.person,
-                    size: 30,
-                  ),
-                  iconColor: Colors.amber[900],
-                  title: Text(
-                    "Profile",
-                    style: GoogleFonts.inknutAntiqua(
-                        color: Colors.white, fontSize: 15),
-                  )),
-              const Divider(),
-              ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const menthome()));
-                  },
-                  leading: const Icon(
-                    Icons.pending_actions_rounded,
-                    size: 30,
-                  ),
-                  iconColor: Colors.amber[900],
-                  title: Text(
-                    "My Schedule",
-                    style: GoogleFonts.inknutAntiqua(
-                      color: Colors.white,
-                      fontSize: 15,
-                    ),
-                  )),
-
-              const Divider(),
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const mentrepo()));
-                },
-                leading: const Icon(
-                  Icons.contact_page_outlined,
-                  size: 30,
-                ),
-                iconColor: Colors.amber[900],
-                title: Text("Report",
-                    style: GoogleFonts.inknutAntiqua(
-                      color: Colors.white,
-                      fontSize: 15,
-                    )),
-              ),
-
-              const Divider(),
-              ListTile(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const setting()));
-                },
-                leading: const Icon(
-                  Icons.settings,
-                  size: 30,
-                ),
-                iconColor: Colors.amber[900],
-                title: Text("Settings",
-                    style: GoogleFonts.inknutAntiqua(
-                      color: Colors.white,
-                      fontSize: 15,
-                    )),
-              ),
-              const Divider(),
-              ListTile(
-                onTap: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const helps()));
-                },
-                leading: const Icon(
-                  Icons.help,
-                  size: 30,
-                ),
-                iconColor: Colors.amber[900],
-                title: Text("Help",
-                    style: GoogleFonts.inknutAntiqua(
-                      color: Colors.white,
-                      fontSize: 15,
-                    )),
-              ),
-              const Divider(),
-              ListTile(
-                onTap: () async {
-                  FirebaseAuth.instance.signOut().then((value) =>
-                      Navigator.of(context).pushAndRemoveUntil(
-                          MaterialPageRoute(
-                              builder: (context) => const logo1()),
-                          (route) => false));
-                  LoginPreference.clearPreference();
-                },
-                leading: const Icon(
-                  Icons.logout,
-                  size: 30,
-                ),
-                iconColor: Colors.amber[900],
-                title: Text("Logout",
-                    style: GoogleFonts.inknutAntiqua(
-                      color: Colors.white,
-                      fontSize: 15,
-                    )),
-              ),
-              const Divider(),
-            ],
-          ),
-        ),
+        drawer: MentorCusDrawer(),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           bottom: const PreferredSize(
@@ -234,155 +107,342 @@ class _menthomeState extends State<menthome> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Container(
-                      height: 220,
-                      width: 400,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 1,
-                            color: Colors.white,
-                          ),
-                          borderRadius: BorderRadius.circular(7)),
-                      child: Row(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Image.asset(
-                              "assets/usersc.jpg",
-                              scale: 1.3,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 5, bottom: 8),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: Text(
-                                    "Catherine",
-                                    style: GoogleFonts.inknutAntiqua(
-                                        color: Colors.white, fontSize: 15),
-                                  ),
-                                ),
-                                Text(
-                                  "catherine@gmail.com",
-                                  style: GoogleFonts.inknutAntiqua(
-                                      color: Colors.white, fontSize: 15),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: SizedBox(
-                                      width: 150,
-                                      child: Text(
-                                        "7654985412",
-                                        style: GoogleFonts.inknutAntiqua(
-                                            color: Colors.white, fontSize: 15),
-                                      )),
-                                ),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Today     |",
-                                      style: GoogleFonts.inknutAntiqua(
-                                          color: Colors.white, fontSize: 15),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 10),
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 20),
-                                        child: Text(
-                                          "10:00 PM",
-                                          style: GoogleFonts.inknutAntiqua(
-                                              color: Colors.white,
-                                              fontSize: 15),
+              child: StreamBuilder<QuerySnapshot>(
+                  stream: DbController().fetchAssignedSessionForMentor(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    List<SessionModel> listOfSessions = snapshot.data!.docs
+                        .map((e) => SessionModel.fromjson(
+                            e.data() as Map<String, dynamic>))
+                        .toList();
+                    if (snapshot.hasData) {
+                      return listOfSessions.isEmpty
+                          ? Center(
+                              child: Text("NO Sessions"),
+                            )
+                          : ListView.builder(
+                              itemCount: listOfSessions.length,
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Container(
+                                    // height: 220,
+                                    width: 400,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                          width: 1,
+                                          color: Colors.white,
                                         ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  "chat",
-                                  style: GoogleFonts.inknutAntiqua(
-                                      color: Colors.white, fontSize: 15),
-                                ),
-                                Text(
-                                  "Prescribed by: Dr.Dayana",
-                                  style: GoogleFonts.inknutAntiqua(
-                                      color: Colors.white, fontSize: 15),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 15),
-                                  child: Row(
-                                    children: [
-                                      ElevatedButton(
-                                          style: ButtonStyle(
-                                              shape: MaterialStatePropertyAll(
-                                                  RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              7),
-                                                      side: const BorderSide(
-                                                          color:
-                                                              Colors.white))),
-                                              backgroundColor:
-                                                  MaterialStatePropertyAll(
-                                                      Colors.amber[900])),
-                                          onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const chatting()));
-                                          },
-                                          child: Text(
-                                            "Accept",
-                                            style: GoogleFonts.inknutAntiqua(
-                                                color: Colors.white,
-                                                fontSize: 15),
-                                          )),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10),
-                                        child: ElevatedButton(
-                                            style: ButtonStyle(
-                                                shape: MaterialStatePropertyAll(
-                                                    RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(7),
-                                                        side: const BorderSide(
-                                                            color:
-                                                                Colors.white))),
-                                                backgroundColor:
-                                                    MaterialStatePropertyAll(
-                                                        Colors.amber[900])),
-                                            onPressed: () {},
-                                            child: Text(
-                                              "Reject",
-                                              style: GoogleFonts.inknutAntiqua(
-                                                  color: Colors.white,
-                                                  fontSize: 15),
-                                            )),
-                                      )
-                                    ],
+                                        borderRadius: BorderRadius.circular(7)),
+                                    child: FutureBuilder(
+                                        future: DbController()
+                                            .fetchSingleUserData(
+                                                listOfSessions[index].uid),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.waiting) {
+                                            return const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          }
+                                          UserModel userData =
+                                              UserModel.fromMap(
+                                                  snapshot.data!.data()
+                                                      as Map<String, dynamic>);
+                                          return Row(
+                                            children: [
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8),
+                                                child: SizedBox(
+                                                  height: 220,
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      .4,
+                                                  child: Image.network(
+                                                    userData.imageUrl!,
+                                                    scale: 1.3,
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 5, bottom: 8),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 20),
+                                                      child: Text(
+                                                        userData.name,
+                                                        style: GoogleFonts
+                                                            .inknutAntiqua(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 15),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      userData.email,
+                                                      style: GoogleFonts
+                                                          .inknutAntiqua(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 15),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              left: 10),
+                                                      child: SizedBox(
+                                                          width: 150,
+                                                          child: Text(
+                                                            userData.phone,
+                                                            style: GoogleFonts
+                                                                .inknutAntiqua(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        15),
+                                                          )),
+                                                    ),
+                                                    FutureBuilder<
+                                                            DocumentSnapshot>(
+                                                        future: DbController()
+                                                            .getSelectedbooking(
+                                                                listOfSessions[
+                                                                        index]
+                                                                    .bookingId,
+                                                                listOfSessions[
+                                                                        index]
+                                                                    .uid),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
+                                                            return const Center(
+                                                              child:
+                                                                  CircularProgressIndicator(),
+                                                            );
+                                                          }
+                                                          // log(snapshot.data!
+                                                          //     .data()
+                                                          //     .toString());
+                                                          BookingModel booking =
+                                                              BookingModel.fromMap(
+                                                                  snapshot.data!
+                                                                          .data()
+                                                                      as Map<
+                                                                          String,
+                                                                          dynamic>);
+
+                                                          return Text(
+                                                            booking.sessionMode,
+                                                            style: GoogleFonts
+                                                                .inknutAntiqua(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        15),
+                                                          );
+                                                        }),
+                                                    FutureBuilder(
+                                                        future: DbController()
+                                                            .getSelectedDoctor(
+                                                                listOfSessions[
+                                                                        index]
+                                                                    .doctorId),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
+                                                            return SizedBox();
+                                                          }
+                                                          Drmodel dr = Drmodel
+                                                              .fromMap(snapshot
+                                                                      .data!
+                                                                      .data()
+                                                                  as Map<String,
+                                                                      dynamic>);
+                                                          return Text(
+                                                            "Prescribed by: Dr.${dr.name}",
+                                                            style: GoogleFonts
+                                                                .inknutAntiqua(
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontSize:
+                                                                        15),
+                                                          );
+                                                        }),
+                                                    Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              top: 15),
+                                                      child: Row(
+                                                        children: [
+                                                          FutureBuilder<
+                                                                  DocumentSnapshot>(
+                                                              future: DbController().getSelectedbooking(
+                                                                  listOfSessions[
+                                                                          index]
+                                                                      .bookingId,
+                                                                  listOfSessions[
+                                                                          index]
+                                                                      .uid),
+                                                              builder: (context,
+                                                                  snapshot) {
+                                                                if (snapshot
+                                                                        .connectionState ==
+                                                                    ConnectionState
+                                                                        .waiting) {
+                                                                  return const Center(
+                                                                    child:
+                                                                        CircularProgressIndicator(),
+                                                                  );
+                                                                }
+                                                                // log(snapshot.data!
+                                                                //     .data()
+                                                                //     .toString());
+                                                                BookingModel
+                                                                    booking =
+                                                                    BookingModel.fromMap(snapshot
+                                                                            .data!
+                                                                            .data()
+                                                                        as Map<
+                                                                            String,
+                                                                            dynamic>);
+
+                                                                return ElevatedButton(
+                                                                    style: ButtonStyle(
+                                                                        shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                                                                            borderRadius: BorderRadius.circular(
+                                                                                7),
+                                                                            side: const BorderSide(
+                                                                                color: Colors
+                                                                                    .white))),
+                                                                        backgroundColor:
+                                                                            MaterialStatePropertyAll(Colors.amber[
+                                                                                900])),
+                                                                    onPressed:
+                                                                        () {
+                                                                      if (listOfSessions[index]
+                                                                              .status ==
+                                                                          "assigned") {
+                                                                        DbController().updateSessionStatus(
+                                                                            listOfSessions[index].sessionId,
+                                                                            "Accepted");
+                                                                      } else {
+                                                                        if (booking.sessionMode ==
+                                                                            "Call") {
+                                                                          onCreateButtonPressed(
+                                                                              context,
+                                                                              booking.userid,
+                                                                              booking.bookingid,
+                                                                              true,
+                                                                              listOfSessions[index].sessionId,booking.doctorid);
+                                                                        }
+                                                                        if (booking.sessionMode ==
+                                                                            "Video Call") {
+                                                                          onCreateButtonPressed(
+                                                                              context,
+                                                                              booking.userid,
+                                                                              booking.bookingid,
+                                                                              true,
+                                                                              listOfSessions[index].sessionId,booking.doctorid);
+                                                                        }
+                                                                        if (booking.sessionMode ==
+                                                                            "Chat") {
+                                                                          Navigator.push(
+                                                                              context,
+                                                                              MaterialPageRoute(
+                                                                                  builder: (context) => chatting(
+                                                                                    isMentor: true,
+                                                                                    doctorId: listOfSessions[index].doctorId,
+                                                                                    sessionId: listOfSessions[index].sessionId!,
+                                                                                    userId: listOfSessions[index].uid,
+                                                                                        userCollection: "user",
+                                                                                        receiverId: userData.id!,
+                                                                                      )));
+                                                                        }
+                                                                      }
+                                                                    },
+                                                                    child: Text(
+                                                                      listOfSessions[index].status ==
+                                                                              "assigned"
+                                                                          ? "Accept"
+                                                                          : "Go",
+                                                                      style: GoogleFonts.inknutAntiqua(
+                                                                          color: Colors
+                                                                              .white,
+                                                                          fontSize:
+                                                                              15),
+                                                                    ));
+                                                              }),
+                                                          listOfSessions[index]
+                                                                      .status ==
+                                                                  "assigned"
+                                                              ? Padding(
+                                                                  padding:
+                                                                      const EdgeInsets
+                                                                          .only(
+                                                                          left:
+                                                                              10),
+                                                                  child: ElevatedButton(
+                                                                      style: ButtonStyle(shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.circular(7), side: const BorderSide(color: Colors.white))), backgroundColor: MaterialStatePropertyAll(Colors.amber[900])),
+                                                                      onPressed: () {
+                                                                        DbController()
+                                                                            .updayeStatus(
+                                                                                listOfSessions[index].bookingId,
+                                                                                listOfSessions[index].uid,
+                                                                                "Accepted",
+                                                                                FirebaseAuth.instance.currentUser!.uid)
+                                                                            .then((value) {
+                                                                          DbController()
+                                                                              .addNotificationToDr(listOfSessions[index].doctorId, NotificationModel(from: "Mentor", fromId: FirebaseAuth.instance.currentUser!.uid, message: "Rejected the session ", to: listOfSessions[index].doctorId, toId: "Doctor"))
+                                                                              .then((value) {
+                                                                            DbController().deleteSessionOfMentorByMentor(listOfSessions[index].sessionId);
+                                                                          });
+                                                                        });
+                                                                      },
+                                                                      child: Text(
+                                                                        "Reject",
+                                                                        style: GoogleFonts.inknutAntiqua(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontSize: 15),
+                                                                      )),
+                                                                )
+                                                              : SizedBox()
+                                                        ],
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          );
+                                        }),
                                   ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                                );
+                              },
+                            );
+                    } else {
+                      return SizedBox();
+                    }
+                  }),
             )
           ],
         ),
