@@ -22,7 +22,8 @@ Future<String> createMeeting() async {
   return json.decode(httpResponse.body)['roomId'];
 }
 
-void onCreateButtonPressed(BuildContext context, String userId,String bookingId,bool isMentor,sessionId,doctorId) async {
+void onCreateButtonPressed(BuildContext context, String userId,
+    String bookingId, bool isMentor, sessionId, doctorId, bool isCall) async {
   // call api to create meeting and then navigate to MeetingScreen with meetingId,token
   await createMeeting().then((meetingId) {
     if (!context.mounted) return;
@@ -34,10 +35,11 @@ void onCreateButtonPressed(BuildContext context, String userId,String bookingId,
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => MeetingScreen(
-          doctorId:doctorId ,
-          sessionId:sessionId ,
+          isCall: isCall,
+          doctorId: doctorId,
+          sessionId: sessionId,
           isMentor: isMentor,
-          bookingId:bookingId ,
+          bookingId: bookingId,
           isUser: false,
           userId: userId,
           meetingId: meetingId,

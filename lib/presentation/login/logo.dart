@@ -21,6 +21,8 @@ class _logoState extends State<logo> {
   @override
   void initState() {
     super.initState();
+      // LoginPreference.clearPreference();
+// 
     Future.delayed(const Duration(seconds: 3), () {
       Timer(const Duration(seconds: 1), () => check());
     });

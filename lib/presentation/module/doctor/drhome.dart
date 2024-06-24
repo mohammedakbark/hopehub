@@ -38,7 +38,7 @@ class _drhomeState extends State<drhome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[850],
-      drawer: DrCustomeDrawer(),
+      drawer: const DrCustomeDrawer(),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         bottom: const PreferredSize(
@@ -159,14 +159,27 @@ class _drhomeState extends State<drhome> {
                                                       BorderRadius.circular(7)),
                                               child: Row(
                                                 children: [
-                                                  Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(8),
-                                                    child: Image.network(
-                                                      userModel.imageUrl!,
-                                                      scale: 1.3,
-                                                    ),
-                                                  ),
+                                                  userModel.imageUrl != ""
+                                                      ? Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8),
+                                                          child: Image.network(
+                                                            userModel.imageUrl!,
+                                                            scale: 1.3,
+                                                          ),
+                                                        )
+                                                      : const CircleAvatar(
+                                                          radius: 50,
+                                                          child: Text(
+                                                            "No Image",
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w100),
+                                                          ),
+                                                        ),
                                                   Padding(
                                                     padding:
                                                         const EdgeInsets.only(
@@ -276,7 +289,7 @@ class _drhomeState extends State<drhome> {
                                                                             color: Colors
                                                                                 .white))),
                                                                     backgroundColor:
-                                                                        MaterialStatePropertyAll(Colors
+                                                                        const MaterialStatePropertyAll(Colors
                                                                             .transparent)),
                                                                 onPressed:
                                                                     () {},
@@ -314,8 +327,10 @@ class _drhomeState extends State<drhome> {
                                                                                   context,
                                                                                   MaterialPageRoute(
                                                                                       builder: (context) => chatting(
-                                                                                        isMentor: false,
-                                                                                        doctorId: "",sessionId: "",userId: "",
+                                                                                            isMentor: false,
+                                                                                            doctorId: "",
+                                                                                            sessionId: "",
+                                                                                            userId: "",
                                                                                             userCollection: "user",
                                                                                             receiverId: mybooking[index].userid,
                                                                                             bookingId: mybooking[index].bookingid,
@@ -323,12 +338,12 @@ class _drhomeState extends State<drhome> {
                                                                             }
                                                                             if (mybooking[index].sessionMode ==
                                                                                 "Video Call") {
-                                                                              onCreateButtonPressed(context, mybooking[index].userid, mybooking[index].bookingid, false, "N/A", "N/A");
+                                                                              onCreateButtonPressed(context, mybooking[index].userid, mybooking[index].bookingid, false, "N/A", "N/A",false);
                                                                               // Navigator.push(context, MaterialPageRoute(builder: (context) => CreateRoomScreen()));
                                                                             }
                                                                             if (mybooking[index].sessionMode ==
                                                                                 "Call") {
-                                                                              onCreateButtonPressed(context, mybooking[index].userid, mybooking[index].bookingid, false, "N/A", "N/A");
+                                                                              onCreateButtonPressed(context, mybooking[index].userid, mybooking[index].bookingid, false, "N/A", "N/A",true);
                                                                             }
                                                                           }
                                                                         },
@@ -356,7 +371,7 @@ class _drhomeState extends State<drhome> {
                                                                                 "Reject",
                                                                                 style: GoogleFonts.inknutAntiqua(color: Colors.white, fontSize: 15),
                                                                               ))
-                                                                          : SizedBox(),
+                                                                          : const SizedBox(),
                                                                     )
                                                                   ],
                                                                 ),
@@ -368,7 +383,7 @@ class _drhomeState extends State<drhome> {
                                               )),
                                         );
                                       } else {
-                                        return SizedBox();
+                                        return const SizedBox();
                                       }
                                     });
                               },

@@ -442,14 +442,24 @@ class _sheduleState extends State<schedle> {
                                                                             index]
                                                                         .sessionMode ==
                                                                     "Call") {
+                                                                  Navigator.of(
+                                                                          context)
+                                                                      .push(MaterialPageRoute(
+                                                                          builder: (context) => JoinScreen(
+
+                                                                                iscall: true,
+                                                                                isMeetWithMentor: false,
+                                                                              )));
                                                                   print("call");
                                                                 } else {
                                                                   log("Video call");
                                                                   Navigator.of(
                                                                           context)
                                                                       .push(MaterialPageRoute(
-                                                                          builder: (context) =>
-                                                                              JoinScreen()));
+                                                                          builder: (context) => JoinScreen(
+                                                                                iscall: false,
+                                                                                isMeetWithMentor: false,
+                                                                              )));
                                                                 }
                                                                 //-----------------------
                                                               },

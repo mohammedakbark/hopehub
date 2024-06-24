@@ -11,6 +11,7 @@ import 'package:hopehub/data/firebase/db_controller.dart';
 import 'package:hopehub/data/firebase/payment_service.dart';
 import 'package:hopehub/presentation/module/user/success.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:upi_india/upi_exception.dart';
 import 'package:upi_india/upi_response.dart';
 
@@ -112,7 +113,7 @@ class _PaymentPageState extends State<PaymentPage> {
                           });
                         } else {
                           BookingController()
-                              .bookNewSchedule(widget.newBooking!)
+                              .bookNewSchedule(widget.newBooking!,Provider.of<BookingController>(context,listen: false).sessionMode)
                               .then((value) {
                             Navigator.pushReplacement(
                                 context,

@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:hopehub/data/Model/booking_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Controller  {
   var _storage = FirebaseStorage.instance;
@@ -42,5 +44,40 @@ class Controller  {
   }
 
   // SLOTE BOOKING.................2.....
+
+  Future<bool> requestPermissions() async {
+  var status = await Permission.storage.status;
+  if (!status.isGranted) {
+    status = await Permission.storage.request();
+  }
+  return status.isGranted;
+}
+
+// Future<void> downloadImage(String imageUrl, String fileName) async {
+//   bool hasPermissions = await requestPermissions();
+//   if (!hasPermissions) {
+//     print("Permissions not granted");
+//     return;
+//   }
+
+//   var dio = 
+
+//   try {
+//     // Get the application documents directory
+//     Directory appDocDir = await getApplicationDocumentsDirectory();
+//     String appDocPath = appDocDir.path;
+
+//     // Create the full file path
+//     String filePath = '$appDocPath/$fileName';
+
+//     // Download the image
+//     await dio.download(imageUrl, filePath);
+
+//     print('Image downloaded to $filePath');
+//   } catch (e) {
+//     print('Error downloading image: $e');
+//   }
+// }
+
  
 }

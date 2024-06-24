@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:hopehub/business_logic/login_preference.dart';
 import 'package:hopehub/data/firebase/booking_controller.dart';
 import 'package:hopehub/data/firebase/controller.dart';
 import 'package:hopehub/data/firebase/db_controller.dart';
@@ -29,11 +30,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<BookingController>(create: (_)=>BookingController()),
-                ChangeNotifierProvider<PaymentController>(create: (_)=>PaymentController()),
-                                ChangeNotifierProvider<DbController>(create: (_)=>DbController())
-
-
+        ChangeNotifierProvider<BookingController>(
+            create: (_) => BookingController()),
+        ChangeNotifierProvider<PaymentController>(
+            create: (_) => PaymentController()),
+        ChangeNotifierProvider<DbController>(create: (_) => DbController())
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

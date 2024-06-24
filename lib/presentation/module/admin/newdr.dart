@@ -76,6 +76,7 @@ class _newdrState extends State<newdr> {
                 .uploadImage(selectedImage!)
                 .then((imageUrl) async {
               final drmodel = Drmodel(
+                  rating: 0.0,
                   name: DrnameController.text,
                   qualification: QualificationController.text,
                   expert: ExpertController.text,

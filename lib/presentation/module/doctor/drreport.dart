@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hopehub/data/Model/mentor_model.dart';
+import 'package:hopehub/data/Model/prescription.dart';
 import 'package:hopehub/data/Model/session_model.dart';
 import 'package:hopehub/data/firebase/db_controller.dart';
 import 'package:hopehub/presentation/login/login1.dart';
@@ -17,6 +19,7 @@ import 'package:hopehub/presentation/module/doctor/mentsent.dart';
 import 'package:hopehub/presentation/module/user/newrep.dart';
 import 'package:hopehub/presentation/module/user/notification.dart';
 import 'package:hopehub/presentation/module/user/settings.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class drreport extends StatefulWidget {
   const drreport({super.key});
@@ -51,8 +54,10 @@ class _drreportState extends State<drreport> {
         actions: [
           IconButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const DrNotificationPage()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DrNotificationPage()));
             },
             icon: const Icon(
               Icons.notifications_on,
@@ -67,16 +72,17 @@ class _drreportState extends State<drreport> {
       ),
       backgroundColor: Colors.grey[850],
       body: StreamBuilder<QuerySnapshot>(
-          stream: DbController().fetchAssignedSessionForDoctor(),
+          stream: DbController().getMyPrescription(
+              "drID", FirebaseAuth.instance.currentUser!.uid),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            List<SessionModel> listOfSessions = snapshot.data!.docs
-                .map((e) =>
-                    SessionModel.fromjson(e.data() as Map<String, dynamic>))
+            List<PrescriptionModel> listOfSessions = snapshot.data!.docs
+                .map((e) => PrescriptionModel.fromJosn(
+                    e.data() as Map<String, dynamic>))
                 .toList();
             if (snapshot.hasData) {
               return listOfSessions.isEmpty
@@ -99,10 +105,10 @@ class _drreportState extends State<drreport> {
                               top: 30, left: 30, bottom: 20),
                           child: Row(
                             children: [
-                              Image.network(listOfSessions[index].presctiption),
+                              Image.network(listOfSessions[index].prescription),
                               FutureBuilder<DocumentSnapshot>(
                                   future: DbController().getSelectedMentor(
-                                      listOfSessions[index].mentroId),
+                                      listOfSessions[index].metID),
                                   builder: (context, snapshot) {
                                     if (snapshot.connectionState ==
                                         ConnectionState.waiting) {
@@ -127,46 +133,53 @@ class _drreportState extends State<drreport> {
                                                 fontSize: 15),
                                           ),
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10, top: 15),
-                                          child: Text(
-                                            "Status :${listOfSessions[index].status}",
-                                            style: GoogleFonts.inknutAntiqua(
-                                                color: Colors.white,
-                                                fontSize: 15),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 20, left: 80),
-                                          child: Row(
-                                            children: [
-                                              IconButton(
-                                                onPressed: () {},
-                                                icon: const Icon(
-                                                  Icons.download_for_offline,
-                                                  size: 25,
-                                                  color: Colors.white,
-                                                ),
-                                              ),
-                                              // IconButton(
-                                              //   onPressed: () {
-                                              //     Navigator.push(
-                                              //         context,
-                                              //         MaterialPageRoute(
-                                              //             builder: (context) =>
-                                              //                 const mentsent()));
-                                              //   },
-                                              //   icon: const Icon(
-                                              //     Icons.send_sharp,
-                                              //     size: 25,
-                                              //     color: Colors.white,
-                                              //   ),
-                                              // )
-                                            ],
-                                          ),
-                                        )
+
+                                        ElevatedButton(
+                                            onPressed: () async {
+                                              await launch(listOfSessions[index]
+                                                  .prescription);
+                                            },
+                                            child: Text("Open"))
+                                        // Padding(
+                                        //   padding: const EdgeInsets.only(
+                                        //       left: 10, top: 15),
+                                        //   child: Text(
+                                        //     "Status :${listOfSessions[index].status}",
+                                        //     style: GoogleFonts.inknutAntiqua(
+                                        //         color: Colors.white,
+                                        //         fontSize: 15),
+                                        //   ),
+                                        // ),
+                                        // Padding(
+                                        //   padding: const EdgeInsets.only(
+                                        //       top: 20, left: 80),
+                                        //   child: Row(
+                                        //     children: [
+                                        //       IconButton(
+                                        //         onPressed: () {},
+                                        //         icon: const Icon(
+                                        //           Icons.download_for_offline,
+                                        //           size: 25,
+                                        //           color: Colors.white,
+                                        //         ),
+                                        //       ),
+                                        //       // IconButton(
+                                        //       //   onPressed: () {
+                                        //       //     Navigator.push(
+                                        //       //         context,
+                                        //       //         MaterialPageRoute(
+                                        //       //             builder: (context) =>
+                                        //       //                 const mentsent()));
+                                        //       //   },
+                                        //       //   icon: const Icon(
+                                        //       //     Icons.send_sharp,
+                                        //       //     size: 25,
+                                        //       //     color: Colors.white,
+                                        //       //   ),
+                                        //       // )
+                                        //     ],
+                                        //   ),
+                                        // )
                                       ],
                                     );
                                   })

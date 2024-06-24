@@ -9,6 +9,7 @@ import 'package:hopehub/presentation/module/user/connection.dart';
 import 'package:hopehub/presentation/module/user/menu.dart';
 import 'package:hopehub/presentation/module/user/notification.dart';
 import 'package:hopehub/presentation/module/user/package.dart';
+import 'package:hopehub/presentation/widget/rating_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -146,7 +147,9 @@ class _HomePageState extends State<HomePage> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                         BookingDoctorDetailsPage(doctor: drmodel,)));
+                                        BookingDoctorDetailsPage(
+                                          doctor: drmodel,
+                                        )));
                           },
                           child: Container(
                             // height: 150,
@@ -169,36 +172,13 @@ class _HomePageState extends State<HomePage> {
                                       backgroundImage:
                                           NetworkImage(drmodel.imageUrl),
                                     ),
-                                    const Padding(
-                                      padding: EdgeInsets.only(top: 10),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.star,
-                                            size: 20,
-                                            color: Colors.amber,
-                                          ),
-                                          Icon(
-                                            Icons.star,
-                                            size: 20,
-                                            color: Colors.amber,
-                                          ),
-                                          Icon(
-                                            Icons.star,
-                                            size: 20,
-                                            color: Colors.amber,
-                                          ),
-                                          Icon(
-                                            Icons.star,
-                                            size: 20,
-                                          ),
-                                          Icon(
-                                            Icons.star,
-                                            size: 20,
-                                          ),
-                                        ],
-                                      ),
-                                    )
+                                    Padding(
+                                        padding: EdgeInsets.only(top: 10),
+                                        child: CustomRating(
+                                          initalRating:
+                                              drmodel.rating.toDouble(),
+                                          isConst: true,
+                                        ))
                                   ]),
                                 ),
                                 Padding(

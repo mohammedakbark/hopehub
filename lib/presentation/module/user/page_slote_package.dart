@@ -99,7 +99,7 @@ class SlotePackagePage extends StatelessWidget {
                             if (isRescheduling == true) {
                               BookingController()
                                   .recheduleDoctor(
-                                      bookingIdForReshedule, drid, value)
+                                      bookingIdForReshedule, drid, value,context)
                                   .then((value) {
                                 Navigator.pushReplacement(
                                     context,
@@ -108,7 +108,7 @@ class SlotePackagePage extends StatelessWidget {
                               });
                             } else {
                               BookingController()
-                                  .bookNewSchedule(value)
+                                  .bookNewSchedule(value,Provider.of<BookingController>(context,listen: false).sessionMode)
                                   .then((value) {
                                 Navigator.pushReplacement(
                                     context,

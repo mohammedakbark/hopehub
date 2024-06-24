@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -54,7 +55,7 @@ class _MenterSchedulePAgeState extends State<MenterSchedulePAge> {
                         widget.sessionModel.bookingId, widget.sessionModel.uid),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center();
+                        return const Center();
                       }
                       BookingModel bookingModel = BookingModel.fromMap(
                           snapshot.data!.data() as Map<String, dynamic>);
@@ -66,7 +67,7 @@ class _MenterSchedulePAgeState extends State<MenterSchedulePAge> {
                                   padding:
                                       const EdgeInsets.only(left: 10, top: 10),
                                   child: CircleAvatar(
-                                    radius: 70,
+                                    radius: 40,
                                     backgroundImage:
                                         NetworkImage(mentorModel.profile),
                                   )
@@ -154,130 +155,193 @@ class _MenterSchedulePAgeState extends State<MenterSchedulePAge> {
                                   itemCount: widget.sessionModel.totalSession),
                             ),
                           ),
-                          FutureBuilder(
-                              future: DbController().chechSessionIsPayed(
-                                  widget.sessionModel.sessionId),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const Center();
-                                }
-                                if (snapshot.data!.data()!["paymentStatus"] ==
-                                    true) {
-                                  return ElevatedButton(
-                                      style: ButtonStyle(
-                                          shape: MaterialStatePropertyAll(
-                                              RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(7),
-                                                  side: const BorderSide(
-                                                      color: Colors.white))),
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                                  Colors.amber[900])),
-                                      onPressed: () {
-                                        if (bookingModel.sessionMode ==
-                                            "Chat") {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (conetxt) =>
-                                                      chatting(
-                                                        isMentor: false,
-                                                        doctorId: "",
-                                                        sessionId: "",
-                                                        userId: "",
-                                                        userCollection:
-                                                            "mentor",
-                                                        receiverId: widget
-                                                            .sessionModel
-                                                            .mentroId,
-                                                      )));
-                                        }
-                                        if (bookingModel.sessionMode ==
-                                            "Call") {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (conetxt) =>
-                                                      JoinScreen()));
-
-//Call
-                                        }
-
-                                        if (bookingModel.sessionMode ==
-                                            "Video Call") {
-                                          Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                  builder: (conetxt) =>
-                                                      JoinScreen()));
-                                          // Video Call
-                                        }
-                                      },
-                                      child: Text(
-                                        "Go",
-                                        style: GoogleFonts.inknutAntiqua(
-                                            color: Colors.white, fontSize: 10),
-                                      ));
-                                }
-                                return Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 60, top: 20),
-                                      child: SizedBox(
-                                        height: 30,
-                                        width: 120,
-                                        child: ElevatedButton(
-                                            style: ButtonStyle(
-                                                shape: MaterialStatePropertyAll(
-                                                    RoundedRectangleBorder(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(7),
-                                                        side: const BorderSide(
-                                                            color:
-                                                                Colors.white))),
-                                                backgroundColor:
-                                                    MaterialStatePropertyAll(
-                                                        Colors.amber[900])),
-                                            onPressed: () {
-                                              // DbController()
-                                              //     .chechSessionIsPayed(
-                                              //         widget.sessionModel.sessionId)
-                                              //     .then((value) {
-                                              //   if (value.data()!["paymentStatus"] ==
-                                              //       false) {
-                                              Navigator.push(
-                                                  context,
+                          Row(
+                            children: [
+                              const Spacer(),
+                              FutureBuilder(
+                                  future: DbController().chechSessionIsPayed(
+                                      widget.sessionModel.sessionId),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center();
+                                    }
+                                    if (snapshot.data!
+                                            .data()!["paymentStatus"] ==
+                                        true) {
+                                      return ElevatedButton(
+                                          style: ButtonStyle(
+                                              shape: MaterialStatePropertyAll(
+                                                  RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              7),
+                                                      side: const BorderSide(
+                                                          color:
+                                                              Colors.white))),
+                                              backgroundColor:
+                                                  MaterialStatePropertyAll(
+                                                      Colors.amber[900])),
+                                          onPressed: () {
+                                            if (bookingModel.sessionMode ==
+                                                "Chat") {
+                                              Navigator.of(context).push(
                                                   MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PaymentPage(
-                                                            isPaymentForMentor:
+                                                      builder: (conetxt) =>
+                                                          chatting(
+                                                            isMentor: false,
+                                                            doctorId: "",
+                                                            sessionId: "",
+                                                            userId: "",
+                                                            userCollection:
+                                                                "mentor",
+                                                            receiverId: widget
+                                                                .sessionModel
+                                                                .mentroId,
+                                                          )));
+                                            }
+                                            if (bookingModel.sessionMode ==
+                                                "Call") {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (conetxt) =>
+                                                          JoinScreen(
+                                                            isMeetWithMentor:
                                                                 true,
-                                                            sessionModel: widget
-                                                                .sessionModel,
+                                                            iscall: true,
                                                           )));
 
-                                              // } else {
+//Call
+                                            }
 
-                                              // }
-                                              // });
-                                            },
-                                            child: Text(
-                                              "Confirm",
-                                              style: GoogleFonts.inknutAntiqua(
-                                                  color: Colors.white,
-                                                  fontSize: 10),
-                                            )),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 20, top: 20),
-                                      child: SizedBox(
-                                        height: 30,
-                                        width: 120,
-                                        child: ElevatedButton(
+                                            if (bookingModel.sessionMode ==
+                                                "Video Call") {
+                                              Navigator.of(context).push(
+                                                  MaterialPageRoute(
+                                                      builder: (conetxt) =>
+                                                          JoinScreen(
+                                                            isMeetWithMentor:
+                                                                true,
+                                                            iscall: false,
+                                                          )));
+                                              // Video Call
+                                            }
+                                          },
+                                          child: Text(
+                                            bookingModel.sessionMode,
+                                            style: GoogleFonts.inknutAntiqua(
+                                                color: Colors.white,
+                                                fontSize: 10),
+                                          ));
+                                    }
+                                    return Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 60, top: 20),
+                                          child: SizedBox(
+                                            height: 30,
+                                            width: 120,
+                                            child: ElevatedButton(
+                                                style: ButtonStyle(
+                                                    shape: MaterialStatePropertyAll(
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        7),
+                                                            side: const BorderSide(
+                                                                color: Colors
+                                                                    .white))),
+                                                    backgroundColor:
+                                                        MaterialStatePropertyAll(
+                                                            Colors.amber[900])),
+                                                onPressed: () {
+                                                  // DbController()
+                                                  //     .chechSessionIsPayed(
+                                                  //         widget.sessionModel.sessionId)
+                                                  //     .then((value) {
+                                                  //   if (value.data()!["paymentStatus"] ==
+                                                  //       false) {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              PaymentPage(
+                                                                isPaymentForMentor:
+                                                                    true,
+                                                                sessionModel: widget
+                                                                    .sessionModel,
+                                                              )));
+
+                                                  // } else {
+
+                                                  // }
+                                                  // });
+                                                },
+                                                child: Text(
+                                                  "Confirm",
+                                                  style:
+                                                      GoogleFonts.inknutAntiqua(
+                                                          color: Colors.white,
+                                                          fontSize: 10),
+                                                )),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 20, top: 20),
+                                          child: SizedBox(
+                                            height: 30,
+                                            width: 120,
+                                            child: ElevatedButton(
+                                                style: ButtonStyle(
+                                                    shape: MaterialStatePropertyAll(
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        7),
+                                                            side: const BorderSide(
+                                                                color: Colors
+                                                                    .white))),
+                                                    backgroundColor:
+                                                        MaterialStatePropertyAll(
+                                                            Colors.amber[900])),
+                                                onPressed: () {
+                                                  DbController()
+                                                      .cancelSessionOfMentorbyUser(
+                                                          widget.sessionModel);
+                                                },
+                                                child: Text(
+                                                  "Cancel",
+                                                  style:
+                                                      GoogleFonts.inknutAntiqua(
+                                                          color: Colors.white,
+                                                          fontSize: 10),
+                                                )),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }),
+                              const Spacer(),
+                              widget.sessionModel.paymentStatus == false
+                                  ? const SizedBox()
+                                  : StreamBuilder<DocumentSnapshot>(
+                                      stream: DbController()
+                                          .checkIsAlreadyRequested(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return const SizedBox();
+                                        }
+                                        if (!snapshot.hasData) {
+                                          return const SizedBox();
+                                        }
+                                        return ElevatedButton(
                                             style: ButtonStyle(
                                                 shape: MaterialStatePropertyAll(
                                                     RoundedRectangleBorder(
@@ -291,21 +355,69 @@ class _MenterSchedulePAgeState extends State<MenterSchedulePAge> {
                                                     MaterialStatePropertyAll(
                                                         Colors.amber[900])),
                                             onPressed: () {
-                                              DbController()
-                                                  .cancelSessionOfMentorbyUser(
-                                                      widget.sessionModel);
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      AlertDialog(
+                                                        backgroundColor:
+                                                            Colors.amber[900],
+                                                        title: Text(
+                                                          snapshot.data!.exists
+                                                              ? "You Already requested For session.please wait for mentor action"
+                                                              : " Request for your session",
+                                                          style: GoogleFonts
+                                                              .inknutAntiqua(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  fontSize: 15),
+                                                        ),
+                                                        actions: [
+                                                          ElevatedButton(
+                                                              style: ButtonStyle(
+                                                                  shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+                                                                      borderRadius:
+                                                                          BorderRadius.circular(
+                                                                              7),
+                                                                      side: const BorderSide(
+                                                                          color: Colors
+                                                                              .white))),
+                                                                  backgroundColor:
+                                                                      MaterialStatePropertyAll(
+                                                                          Colors
+                                                                              .amber[900])),
+                                                              onPressed: () {
+                                                                DbController()
+                                                                    .sendRequestToMentorFromUser(widget
+                                                                        .sessionModel
+                                                                        .mentroId);
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: Text(
+                                                                snapshot.data!
+                                                                        .exists
+                                                                    ? "Wait"
+                                                                    : "Request",
+                                                                style: GoogleFonts
+                                                                    .inknutAntiqua(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontSize:
+                                                                            15),
+                                                              ))
+                                                        ],
+                                                      ));
                                             },
                                             child: Text(
-                                              "Cancel",
+                                              "Request",
                                               style: GoogleFonts.inknutAntiqua(
                                                   color: Colors.white,
                                                   fontSize: 10),
-                                            )),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
+                                            ));
+                                      }),
+                              const Spacer()
+                            ],
+                          )
                         ],
                       );
                     })),

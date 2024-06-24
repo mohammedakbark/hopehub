@@ -13,6 +13,7 @@ import 'package:hopehub/presentation/module/mentor/mentpro.dart';
 import 'package:hopehub/presentation/module/user/newrep.dart';
 import 'package:hopehub/presentation/module/user/notification.dart';
 import 'package:hopehub/presentation/module/user/settings.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class mentrepo extends StatefulWidget {
   const mentrepo({super.key});
@@ -121,37 +122,44 @@ class _mentrepoState extends State<mentrepo> {
                                                         fontSize: 15),
                                               ),
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 78, left: 80),
-                                              child: Row(
-                                                children: [
-                                                  IconButton(
-                                                    onPressed: () {},
-                                                    icon: const Icon(
-                                                      Icons
-                                                          .download_for_offline,
-                                                      size: 25,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                  // IconButton(
-                                                  //   onPressed: () {
-                                                  //     Navigator.push(
-                                                  //         context,
-                                                  //         MaterialPageRoute(
-                                                  //             builder: (context) =>
-                                                  //                 const drsent()));
-                                                  //   },
-                                                  //   icon: const Icon(
-                                                  //     Icons.send_sharp,
-                                                  //     size: 25,
-                                                  //     color: Colors.white,
-                                                  //   ),
-                                                  // )
-                                                ],
-                                              ),
-                                            )
+                                            // Padding(
+                                            //   padding: const EdgeInsets.only(
+                                            //       top: 78, left: 80),
+                                            //   child: Row(
+                                            //     children: [
+                                            //       IconButton(
+                                            //         onPressed: () {},
+                                            //         icon: const Icon(
+                                            //           Icons
+                                            //               .download_for_offline,
+                                            //           size: 25,
+                                            //           color: Colors.white,
+                                            //         ),
+                                            //       ),
+                                            //       // IconButton(
+                                            //       //   onPressed: () {
+                                            //       //     Navigator.push(
+                                            //       //         context,
+                                            //       //         MaterialPageRoute(
+                                            //       //             builder: (context) =>
+                                            //       //                 const drsent()));
+                                            //       //   },
+                                            //       //   icon: const Icon(
+                                            //       //     Icons.send_sharp,
+                                            //       //     size: 25,
+                                            //       //     color: Colors.white,
+                                            //       //   ),
+                                            //       // )
+                                            //     ],
+                                            //   ),
+                                            // )
+
+                                            ElevatedButton(
+                                                onPressed: () async {
+                                                  await launch(sessions[index]
+                                                      .presctiption);
+                                                },
+                                                child: Text("Open"))
                                           ],
                                         );
                                       })

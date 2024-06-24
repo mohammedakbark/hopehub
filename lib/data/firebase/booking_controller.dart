@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:hopehub/data/Model/booking_model.dart';
 import 'package:hopehub/data/firebase/db_controller.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class BookingController with ChangeNotifier {
   final db = FirebaseFirestore.instance;
@@ -15,6 +16,7 @@ class BookingController with ChangeNotifier {
 
   changeSession(newSession) {
     sessionMode = newSession;
+    notifyListeners();
     log(sessionMode);
   }
 
@@ -95,7 +97,7 @@ class BookingController with ChangeNotifier {
     return newBooking;
   }
 
-  Future bookNewSchedule(BookingService newBooking) async {
+  Future bookNewSchedule(BookingService newBooking, sessionMode) async {
     _bookingModel = BookingModel(
         status: "Pending",
         payment: "130",
@@ -126,9 +128,11 @@ class BookingController with ChangeNotifier {
     print('/////////Uploaded successfully');
   }
 
-  Future recheduleDoctor(bookingId, doctorId, BookingService newBooking) async {
+  Future recheduleDoctor(
+      bookingId, doctorId, BookingService newBooking, context) async {
     DbController().cancelMyBooking(bookingId, doctorId);
-    bookNewSchedule(newBooking);
+    bookNewSchedule(newBooking,
+        Provider.of<BookingController>(context, listen: false).sessionMode);
   }
 
   Future<QuerySnapshot> checkUserAlredyHAveAScedule() async {

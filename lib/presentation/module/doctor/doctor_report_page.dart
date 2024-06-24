@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hopehub/business_logic/helper.dart';
+import 'package:hopehub/data/Model/prescription.dart';
 import 'package:hopehub/data/Model/session_model.dart';
 import 'package:hopehub/data/firebase/controller.dart';
 import 'package:hopehub/data/firebase/db_controller.dart';
@@ -96,7 +97,7 @@ class _ReportPageState extends State<ReportPage> {
                               ),
                               child: IconButton(
                                   onPressed: () async {
-                                    Controller()
+                                    await Controller()
                                         .pickImageFromCamera()
                                         .then((value) {
                                       selectedImage = value;
@@ -224,6 +225,13 @@ class _ReportPageState extends State<ReportPage> {
                                     .uploadImage("prescription",
                                         File(selectedImage!.path))
                                     .then((url) {
+                                  DbController().addToPrescription(
+                                      PrescriptionModel(
+                                          drID: FirebaseAuth
+                                              .instance.currentUser!.uid,
+                                          metID: selectedMentorData!["id"],
+                                          prescription: url,
+                                          uid: widget.patientId));
                                   DbController().assignAPatientToMentor(
                                       SessionModel(
                                           bookingId: widget.bookId,

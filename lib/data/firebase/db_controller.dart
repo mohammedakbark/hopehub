@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hopehub/data/Model/notification_model.dart';
+import 'package:hopehub/data/Model/prescription.dart';
 import 'package:hopehub/data/Model/session_model.dart';
 import 'package:hopehub/data/Model/user_model.dart';
 import 'package:hopehub/data/firebase/booking_controller.dart';
@@ -245,24 +246,63 @@ class DbController with ChangeNotifier {
     return snapshot.data()!["totalSession"];
   }
 
-  reduceSessionByMentor(id, int session,doctorId,bookingId,userId) {
+  reduceSessionByMentor(id, int session, doctorId, bookingId, userId) {
     if (session == 0) {
       db.collection("Sessions").doc(id).delete();
-        db
-        .collection('doctor')
-        .doc(doctorId)
-        .collection('bookings')
-        .doc(bookingId)
-        .delete();
-    db
-        .collection('user')
-        .doc(userId)
-        .collection('bookings')
-        .doc(bookingId)
-        .delete();
+      db
+          .collection('doctor')
+          .doc(doctorId)
+          .collection('bookings')
+          .doc(bookingId)
+          .delete();
+      db
+          .collection('user')
+          .doc(userId)
+          .collection('bookings')
+          .doc(bookingId)
+          .delete();
     } else {
       db.collection("Sessions").doc(id).update({"totalSession": session});
     }
+  }
+
+  sendRequestToMentorFromUser(
+    toId,
+  ) {
+    NotificationModel model = NotificationModel(
+        from: "User",
+        fromId: FirebaseAuth.instance.currentUser!.uid,
+        message: "you have a request for Session",
+        to: "Mentor",
+        toId: toId);
+    db
+        .collection("Request")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set(model.toJosn(FirebaseAuth.instance.currentUser!.uid));
+  }
+
+  Stream<DocumentSnapshot> checkIsAlreadyRequested() {
+    return db
+        .collection("Request")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .snapshots();
+  }
+
+  Stream<DocumentSnapshot> getRequest(docIc) {
+    return db.collection("Request").doc(docIc).snapshots();
+  }
+
+  deleteSession(docIc) {
+    return db.collection("Request").doc(docIc).delete();
+  }
+
+  addToPrescription(PrescriptionModel model) {
+    final doc = db.collection("Prescription").doc();
+    doc.set(model.toJson(doc.id));
+  }
+
+ Stream<QuerySnapshot> getMyPrescription(String where,String id) {
+    return db.collection("Prescription").where(where,isEqualTo: id).snapshots();
   }
 }
 

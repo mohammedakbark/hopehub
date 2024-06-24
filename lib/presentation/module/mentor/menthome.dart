@@ -38,7 +38,7 @@ class _menthomeState extends State<menthome> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey[850],
-        drawer: MentorCusDrawer(),
+        drawer: const MentorCusDrawer(),
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           bottom: const PreferredSize(
@@ -121,7 +121,7 @@ class _menthomeState extends State<menthome> {
                         .toList();
                     if (snapshot.hasData) {
                       return listOfSessions.isEmpty
-                          ? Center(
+                          ? const Center(
                               child: Text("NO Sessions"),
                             )
                           : ListView.builder(
@@ -156,21 +156,34 @@ class _menthomeState extends State<menthome> {
                                                       as Map<String, dynamic>);
                                           return Row(
                                             children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8),
-                                                child: SizedBox(
-                                                  height: 220,
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      .4,
-                                                  child: Image.network(
-                                                    userData.imageUrl!,
-                                                    scale: 1.3,
-                                                  ),
-                                                ),
-                                              ),
+                                              userData.imageUrl == ""
+                                                  ? const CircleAvatar(
+                                                      radius: 60,
+                                                      child: Text(
+                                                        "No Image",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .w100),
+                                                      ),
+                                                    )
+                                                  : Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8),
+                                                      child: SizedBox(
+                                                        height: 220,
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            .4,
+                                                        child: Image.network(
+                                                          userData.imageUrl!,
+                                                          scale: 1.3,
+                                                        ),
+                                                      ),
+                                                    ),
                                               Padding(
                                                 padding: const EdgeInsets.only(
                                                     left: 5, bottom: 8),
@@ -269,7 +282,7 @@ class _menthomeState extends State<menthome> {
                                                                   .connectionState ==
                                                               ConnectionState
                                                                   .waiting) {
-                                                            return SizedBox();
+                                                            return const SizedBox();
                                                           }
                                                           Drmodel dr = Drmodel
                                                               .fromMap(snapshot
@@ -338,6 +351,9 @@ class _menthomeState extends State<menthome> {
                                                                                 900])),
                                                                     onPressed:
                                                                         () {
+                                                                      DbController()
+                                                                          .deleteSession(
+                                                                              listOfSessions[index].uid);
                                                                       if (listOfSessions[index]
                                                                               .status ==
                                                                           "assigned") {
@@ -352,7 +368,9 @@ class _menthomeState extends State<menthome> {
                                                                               booking.userid,
                                                                               booking.bookingid,
                                                                               true,
-                                                                              listOfSessions[index].sessionId,booking.doctorid);
+                                                                              listOfSessions[index].sessionId,
+                                                                              booking.doctorid,
+                                                                              true);
                                                                         }
                                                                         if (booking.sessionMode ==
                                                                             "Video Call") {
@@ -361,7 +379,9 @@ class _menthomeState extends State<menthome> {
                                                                               booking.userid,
                                                                               booking.bookingid,
                                                                               true,
-                                                                              listOfSessions[index].sessionId,booking.doctorid);
+                                                                              listOfSessions[index].sessionId,
+                                                                              booking.doctorid,
+                                                                              false);
                                                                         }
                                                                         if (booking.sessionMode ==
                                                                             "Chat") {
@@ -369,10 +389,10 @@ class _menthomeState extends State<menthome> {
                                                                               context,
                                                                               MaterialPageRoute(
                                                                                   builder: (context) => chatting(
-                                                                                    isMentor: true,
-                                                                                    doctorId: listOfSessions[index].doctorId,
-                                                                                    sessionId: listOfSessions[index].sessionId!,
-                                                                                    userId: listOfSessions[index].uid,
+                                                                                        isMentor: true,
+                                                                                        doctorId: listOfSessions[index].doctorId,
+                                                                                        sessionId: listOfSessions[index].sessionId!,
+                                                                                        userId: listOfSessions[index].uid,
                                                                                         userCollection: "user",
                                                                                         receiverId: userData.id!,
                                                                                       )));
@@ -383,7 +403,7 @@ class _menthomeState extends State<menthome> {
                                                                       listOfSessions[index].status ==
                                                                               "assigned"
                                                                           ? "Accept"
-                                                                          : "Go",
+                                                                          : "Session",
                                                                       style: GoogleFonts.inknutAntiqua(
                                                                           color: Colors
                                                                               .white,
@@ -425,10 +445,42 @@ class _menthomeState extends State<menthome> {
                                                                             fontSize: 15),
                                                                       )),
                                                                 )
-                                                              : SizedBox()
+                                                              : const SizedBox(),
+                                                          // Spacer(),
                                                         ],
                                                       ),
-                                                    )
+                                                    ),
+                                                    StreamBuilder<
+                                                            DocumentSnapshot>(
+                                                        stream: DbController()
+                                                            .getRequest(
+                                                                listOfSessions[
+                                                                        index]
+                                                                    .uid),
+                                                        builder: (context,
+                                                            snapshot) {
+                                                          if (snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting) {
+                                                            return const SizedBox();
+                                                          }
+                                                          if (!snapshot
+                                                              .hasData) {
+                                                            return const SizedBox();
+                                                          }
+
+                                                          return snapshot
+                                                                  .data!.exists
+                                                              ? Text(
+                                                                  "(You have a request for session)",
+                                                                  style: GoogleFonts.inknutAntiqua(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          10))
+                                                              : Text("");
+                                                        })
                                                   ],
                                                 ),
                                               )
@@ -440,7 +492,7 @@ class _menthomeState extends State<menthome> {
                               },
                             );
                     } else {
-                      return SizedBox();
+                      return const SizedBox();
                     }
                   }),
             )
