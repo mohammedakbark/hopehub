@@ -35,7 +35,7 @@ class LoginPreference {
 
     if (doctorCollection.exists) {
       Navigator.pushAndRemoveUntil(context,
-          MaterialPageRoute(builder: (context) => drhome()), (route) => false);
+          MaterialPageRoute(builder: (context) => const drhome()), (route) => false);
     }
     if (userCollection.exists) {
       Navigator.pushAndRemoveUntil(
@@ -49,7 +49,7 @@ class LoginPreference {
     if (mentorCollection.exists) {
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (context) => menthome()),
+          MaterialPageRoute(builder: (context) => const menthome()),
           (route) => false);
     }
   }
